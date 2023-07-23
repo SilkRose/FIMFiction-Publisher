@@ -1,0 +1,14 @@
+{
+  "name": "fimp",
+  "version": "1.0.0",
+  "description": "FIMFiction Publisher.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Silk Rose",
+  "license": "MIT",
+  "dependencies": {
+    "puppeteer": "^20.9.0"
+  }
+}
