@@ -1,10 +1,10 @@
 import puppeteer from "puppeteer";
-import readlineSync from 'readline-sync';
+import readlineSync from "readline-sync";
 
 async function mane() {
     const browser = await puppeteer.launch({
         headless: false,
-        slowMo: 100
+        slowMo: 100,
     });
     const page = await browser.newPage();
 
@@ -40,17 +40,27 @@ async function login(page: any) {
     await page.type('input[name="password"]', input_password());
     await page.waitForTimeout(1000);
     await login_button[0].click();
+    const success = await page.evaluate(() => {
+        return !!!document.querySelector(".error-message");
+    });
+    console.log(success);
+    if (!success) {
+        await page.waitForSelector(".error-message");
+        let error = await page.$(".error-message");
+        let text = await page.evaluate((el: { textContent: any; }) => el.textContent, error);
+        console.log(text);
+    }
     await page.waitForTimeout(4000);
 }
 
 function input_username() {
-    return readlineSync.question('Enter your username or email: ');
-  }
+    return readlineSync.question("Enter your username or email: ");
+}
 
 function input_password() {
-    return readlineSync.question('Enter your password (hidden input): ', {
-      hideEchoBack: true,
+    return readlineSync.question("Enter your password (hidden input): ", {
+        hideEchoBack: true,
     });
-  }
+}
 
 mane();
