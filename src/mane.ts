@@ -3,6 +3,26 @@ import readlineSync from "readline-sync";
 import { promises as fsPromises } from "fs";
 import fs from "fs";
 
+import pkg from 'electron';
+const { BrowserWindow, app } = pkg;
+
+let win = new BrowserWindow({
+    width: 600,
+    height: 400,
+    webPreferences: {
+        nodeIntegration: true,
+        //preload: `${__dirname}/scripts/Window.js`,
+    },
+});
+
+win.loadURL("https://www.fimfiction.net/");
+
+app.on("ready", () => {
+    console.log("App is ready");
+});
+
+//mane();
+
 async function mane() {
     const browser = await puppeteer.launch({
         headless: true,
@@ -35,7 +55,7 @@ async function mane() {
         let elements = document.getElementsByClassName("story_name");
         for (var element of elements)
             stories.push({
-                id: element.outerHTML.split('/')[2],
+                id: element.outerHTML.split("/")[2],
                 name: element.innerHTML,
             });
         return stories;
@@ -80,5 +100,3 @@ function input_password() {
         hideEchoBack: true,
     });
 }
-
-mane();

@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "FIMFiction Publisher",
   "private": true,
+  "main": "dist/mane.js",
   "type": "module",
   "packageManager": "pnpm@7.28.0",
   "scripts": {
@@ -29,6 +30,7 @@
     "@total-typescript/ts-reset": "^0.3.7",
     "@types/node": "^18.14.6",
     "@types/readline-sync": "^1.4.4",
+    "electron": "^25.3.2",
     "typescript": "^4.9.5"
   }
 }
