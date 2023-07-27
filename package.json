@@ -1,14 +1,31 @@
 {
   "name": "fimp",
-  "version": "1.0.0",
-  "description": "FIMFiction Publisher.",
-  "main": "index.js",
+  "version": "0.0.1",
+  "description": "FIMFiction Publisher",
+  "private": true,
+  "packageManager": "pnpm@7.28.0",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc"
   },
-  "author": "Silk Rose",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SilkRose/fimp.git"
+  },
+  "contributors": [
+    "Silk Rose",
+    "Meadowsys"
+  ],
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/SilkRose/fimp/issues"
+  },
+  "homepage": "https://github.com/SilkRose/fimp#readme",
   "dependencies": {
     "puppeteer": "^20.9.0"
+  },
+  "devDependencies": {
+    "@total-typescript/ts-reset": "^0.3.7",
+    "@types/node": "^18.14.6",
+    "typescript": "^4.9.5"
   }
 }

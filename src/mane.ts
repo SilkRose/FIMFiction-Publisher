@@ -1,4 +1,4 @@
-const puppeteer = require("puppeteer");
+import puppeteer from "puppeteer";
 
 async function mane() {
     const browser = await puppeteer.launch();
@@ -19,7 +19,7 @@ async function mane() {
 
     let likes = await page.$eval(
         ".likes",
-        (likesElement) => likesElement.innerText
+        (likesElement: any) => likesElement.innerText
     );
 
     console.log(likes + " likes on The Pink Tax.");
@@ -27,7 +27,7 @@ async function mane() {
     await browser.close();
 }
 
-async function login(page) {
+async function login(page: any) {
     await page.focus('input[name="username"]');
 
     await page.type('input[name="username"]', "Test");
@@ -36,7 +36,7 @@ async function login(page) {
 
     const enteredUsername = await page.$eval(
         'input[name="username"]',
-        (input) => input.value
+        (input: { value: any; }) => input.value
     );
 
     console.log("Entered Username:", enteredUsername);
