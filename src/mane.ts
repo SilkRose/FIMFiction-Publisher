@@ -5,7 +5,7 @@ import fs from "fs";
 
 async function mane() {
     const browser = await puppeteer.launch({
-        headless: false,
+        headless: true,
         slowMo: 0,
     });
     const page = await browser.newPage();
@@ -15,13 +15,10 @@ async function mane() {
             (await fsPromises.readFile("./cookies.json")).toString()
         );
         await page.setCookie(...cookies);
-
-        await page.waitForTimeout(1000);
     }
 
     await page.goto("https://www.fimfiction.net/");
 
-    await page.waitForTimeout(1000);
     const logged_in = (await page.$('input[name="username"]')) == null;
 
     if (logged_in) {
@@ -33,7 +30,16 @@ async function mane() {
 
     await page.goto("https://www.fimfiction.net/manage/stories");
 
-    let stories = await page.$eval("a.story_name", (el) => el.href);
+    let stories = await page.evaluate(() => {
+        let stories = [];
+        let elements = document.getElementsByClassName("story_name");
+        for (var element of elements)
+            stories.push({
+                id: element.outerHTML.split('/')[2],
+                name: element.innerHTML,
+            });
+        return stories;
+    });
     console.log(stories);
     await browser.close();
 }
@@ -51,7 +57,6 @@ async function login(page: any) {
     const success = await page.evaluate(() => {
         return !!!document.querySelector(".error-message");
     });
-    console.log(success);
     if (!success) {
         await page.waitForSelector(".error-message");
         let error = await page.$(".error-message");
@@ -62,7 +67,6 @@ async function login(page: any) {
         console.log(text);
     } else {
         const cookies = await page.cookies();
-        console.log(cookies);
         await fsPromises.writeFile("cookies.json", JSON.stringify(cookies));
     }
 }
