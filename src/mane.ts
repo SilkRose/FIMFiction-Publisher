@@ -6,7 +6,7 @@ import fs from "fs";
 async function mane() {
     const browser = await puppeteer.launch({
         headless: false,
-        slowMo: 100,
+        slowMo: 0,
     });
     const page = await browser.newPage();
 
@@ -31,15 +31,10 @@ async function mane() {
         await login(page);
     }
 
-    await page.goto("https://www.fimfiction.net/story/539422/the-pink-tax");
+    await page.goto("https://www.fimfiction.net/manage/stories");
 
-    let likes = await page.$eval(
-        ".likes",
-        (likesElement: any) => likesElement.innerText
-    );
-
-    console.log(likes + " likes on The Pink Tax.");
-
+    let stories = await page.$eval("a.story_name", (el) => el.href);
+    console.log(stories);
     await browser.close();
 }
 
