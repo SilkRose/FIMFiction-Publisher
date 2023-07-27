@@ -1,5 +1,7 @@
 import puppeteer from "puppeteer";
 import readlineSync from "readline-sync";
+import { promises as fsPromises } from "fs";
+import fs from "fs";
 
 async function mane() {
     const browser = await puppeteer.launch({
@@ -8,8 +10,18 @@ async function mane() {
     });
     const page = await browser.newPage();
 
+    if (fs.existsSync("./cookies.json")) {
+        const cookies = JSON.parse(
+            (await fsPromises.readFile("./cookies.json")).toString()
+        );
+        await page.setCookie(...cookies);
+
+        await page.waitForTimeout(1000);
+    }
+
     await page.goto("https://www.fimfiction.net/");
 
+    await page.waitForTimeout(1000);
     const logged_in = (await page.$('input[name="username"]')) == null;
 
     if (logged_in) {
@@ -40,6 +52,7 @@ async function login(page: any) {
     await page.type('input[name="password"]', input_password());
     await page.waitForTimeout(1000);
     await login_button[0].click();
+    await page.waitForTimeout(1000);
     const success = await page.evaluate(() => {
         return !!!document.querySelector(".error-message");
     });
@@ -47,10 +60,16 @@ async function login(page: any) {
     if (!success) {
         await page.waitForSelector(".error-message");
         let error = await page.$(".error-message");
-        let text = await page.evaluate((el: { textContent: any; }) => el.textContent, error);
+        let text = await page.evaluate(
+            (el: { textContent: any }) => el.textContent,
+            error
+        );
         console.log(text);
+    } else {
+        const cookies = await page.cookies();
+        console.log(cookies);
+        await fsPromises.writeFile("cookies.json", JSON.stringify(cookies));
     }
-    await page.waitForTimeout(4000);
 }
 
 function input_username() {
