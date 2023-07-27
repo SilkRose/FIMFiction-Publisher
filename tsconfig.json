@@ -3,6 +3,8 @@
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "node",
+    "rootDir": "./src",
+    "outDir": "./dist",
     "noEmit": true,
     "strict": true,
     "alwaysStrict": true,
@@ -26,5 +28,8 @@
     "isolatedModules": true,
     "resolveJsonModule": true,
     "noFallthroughCasesInSwitch": true
-  }
+  },
+  "include": [
+    "./src/*"
+  ]
 }
