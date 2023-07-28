@@ -29,6 +29,10 @@ async function start() {
         //  })
     }
     win.loadURL("https://www.fimfiction.net/");
+    win.webContents.on("did-start-loading", () => {
+        win.webContents.executeJavaScript(`document.cookie`).then((result) => {
+            console.log(result);
+        })});
     win.webContents.on("did-finish-load", () => {
         win.webContents.executeJavaScript(`
             document.querySelector('.user_toolbar > ul').innerHTML += \`<li>${sampleHTML}</li>\`;
