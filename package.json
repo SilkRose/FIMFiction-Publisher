@@ -3,8 +3,9 @@
   "version": "0.0.1",
   "description": "FIMFiction Publisher",
   "private": true,
-  "main": "dist/mane.js",
-  "type": "module",
+  "exports": "./src/mane.js",
+  "type": "commonjs",
+  "engines": {"node": ">=16"},
   "packageManager": "pnpm@7.28.0",
   "scripts": {
     "build": "tsc"

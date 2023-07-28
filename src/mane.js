@@ -1,25 +1,38 @@
-import puppeteer from "puppeteer";
-import readlineSync from "readline-sync";
-import { promises as fsPromises } from "fs";
-import fs from "fs";
-
-import pkg from 'electron';
-const { BrowserWindow, app } = pkg;
-
-let win = new BrowserWindow({
-    width: 600,
-    height: 400,
-    webPreferences: {
-        nodeIntegration: true,
-        //preload: `${__dirname}/scripts/Window.js`,
-    },
-});
-
-win.loadURL("https://www.fimfiction.net/");
+const puppeteer = require("puppeteer");
+const readlineSync = require("readline-sync");
+const fsPromises = require("fs").promises;
+const fs = require("fs");
+const { BrowserWindow, app } = require('electron');
 
 app.on("ready", () => {
-    console.log("App is ready");
+    start();
 });
+
+function start() {
+    let win = new BrowserWindow({
+        width: 1000,
+        height: 800,
+        webPreferences: {
+            nodeIntegration: true,
+            //preload: `${__dirname}/scripts/Window.js`,
+        },
+    });
+    
+    win.loadURL("https://www.fimfiction.net/");
+    win.webContents.on('did-finish-load', () => {
+        win.webContents.executeJavaScript(`
+            document.querySelector('.user_toolbar > ul').innerHTML += \`<li>${sampleHTML}</li>\`;
+        `);
+      });
+}
+
+
+  const sampleHTML = '<p>Pinkie Pie is cute!</p>';
+
+  // Call the function to inject HTML
+
+    
+
 
 //mane();
 
@@ -64,7 +77,7 @@ async function mane() {
     await browser.close();
 }
 
-async function login(page: any) {
+async function login(page) {
     const login_button = await page.$x("//button[contains(., 'Log In')]");
     await page.focus('input[name="username"]');
     await page.type('input[name="username"]', input_username());
@@ -81,7 +94,7 @@ async function login(page: any) {
         await page.waitForSelector(".error-message");
         let error = await page.$(".error-message");
         let text = await page.evaluate(
-            (el: { textContent: any }) => el.textContent,
+            (el) => el.textContent,
             error
         );
         console.log(text);
