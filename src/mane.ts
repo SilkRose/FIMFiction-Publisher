@@ -1,4 +1,4 @@
-import puppeteer from "puppeteer";
+import puppeteer, { Page } from "puppeteer";
 import readlineSync from "readline-sync";
 import { promises as fsPromises } from "fs";
 import fs from "fs";
@@ -10,36 +10,16 @@ async function mane() {
     });
     const page = await browser.newPage();
 
-    if (fs.existsSync("./cookies.json")) {
-        const cookies = JSON.parse(
-            (await fsPromises.readFile("./cookies.json")).toString()
-        );
-        await page.setCookie(...cookies);
-    }
+    await check_cookies(page);
 
     await page.goto("https://www.fimfiction.net/");
 
-    const logged_in = (await page.$('input[name="username"]')) == null;
-
-    if (logged_in) {
-        console.log("User is logged in.");
-    } else {
-        console.log("User is not logged in.");
-        await login(page);
-    }
+    await check_login(page);
 
     await page.goto("https://www.fimfiction.net/manage/stories");
 
-    let stories = await page.evaluate(() => {
-        let stories = [];
-        let elements = document.getElementsByClassName("story_name");
-        for (var element of elements)
-            stories.push({
-                id: element.outerHTML.split('/')[2],
-                name: element.innerHTML,
-            });
-        return stories;
-    });
+    const stories = await get_story_data(page);
+
     console.log(stories);
     await browser.close();
 }
@@ -69,6 +49,39 @@ async function login(page: any) {
         const cookies = await page.cookies();
         await fsPromises.writeFile("cookies.json", JSON.stringify(cookies));
     }
+}
+
+async function check_cookies(page: Page) {
+    if (fs.existsSync("./cookies.json")) {
+        const cookies = JSON.parse(
+            (await fsPromises.readFile("./cookies.json")).toString()
+        );
+        await page.setCookie(...cookies);
+    }
+}
+
+async function check_login(page: Page) {
+    const logged_in = (await page.$('input[name="username"]')) == null;
+    if (logged_in) {
+        console.log("User is logged in.");
+    } else {
+        console.log("User is not logged in.");
+        await login(page);
+    }
+}
+
+async function get_story_data(page: Page) {
+    let stories = await page.evaluate(() => {
+        let stories = [];
+        let elements = document.getElementsByClassName("story_name");
+        for (var element of elements)
+            stories.push({
+                id: element.outerHTML.split("/")[2],
+                name: element.innerHTML,
+            });
+        return stories;
+    });
+    return stories;
 }
 
 function input_username() {
