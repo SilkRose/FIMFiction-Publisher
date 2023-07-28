@@ -2,13 +2,13 @@ const puppeteer = require("puppeteer");
 const readlineSync = require("readline-sync");
 const fsPromises = require("fs").promises;
 const fs = require("fs");
-const { BrowserWindow, app } = require('electron');
+const { BrowserWindow, app, session } = require("electron");
 
 app.on("ready", () => {
     start();
 });
 
-function start() {
+async function start() {
     let win = new BrowserWindow({
         width: 1000,
         height: 800,
@@ -17,22 +17,37 @@ function start() {
             //preload: `${__dirname}/scripts/Window.js`,
         },
     });
-    
+    if (fs.existsSync("./cookies.json")) {
+        let cookies = JSON.parse(
+            (await fsPromises.readFile("../cookies.json")).toString()
+        );
+
+        console.log(cookies);
+        //cookies[0].url = 'https://www.fimfiction.net/'
+        //session.defaultSession.cookies.set(cookies[0], (error) => {
+        //    if (error) console.error(error)
+        //  })
+    }
     win.loadURL("https://www.fimfiction.net/");
-    win.webContents.on('did-finish-load', () => {
+    win.webContents.on("did-finish-load", () => {
         win.webContents.executeJavaScript(`
             document.querySelector('.user_toolbar > ul').innerHTML += \`<li>${sampleHTML}</li>\`;
         `);
-      });
+        if (
+            win.webContents.getURL() ==
+            "https://www.fimfiction.net/user/237915/Silk+Rose"
+        ) {
+            win.webContents.executeJavaScript(`document.cookie`).then((result) => {
+                console.log(result);
+            });
+        }
+    });
 }
 
+const sampleHTML = "<p>Pinkie Pie is cute!</p>";
 
-  const sampleHTML = '<p>Pinkie Pie is cute!</p>';
-
-  // Call the function to inject HTML
-
-    
-
+function getCookie() {
+}
 
 //mane();
 
@@ -93,10 +108,7 @@ async function login(page) {
     if (!success) {
         await page.waitForSelector(".error-message");
         let error = await page.$(".error-message");
-        let text = await page.evaluate(
-            (el) => el.textContent,
-            error
-        );
+        let text = await page.evaluate((el) => el.textContent, error);
         console.log(text);
     } else {
         const cookies = await page.cookies();
