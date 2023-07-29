@@ -3,18 +3,12 @@ import readlineSync from "readline-sync";
 import { promises as fsPromises } from "fs";
 import fs from "fs";
 
-const submit_selector =
-    '<a data-click="submit"><i class="fa fa-cloud-upload"></i> Submit</a>';
-const publish_chapter_selector =
-    '<span class="chapter_publish"><i class="fa fa-upload"></i> Publish</span>';
-const unpublished_chapter_selector =
-    '<i class="fa fa-circle" title="Not Published" style="color:red;"></i>';
-const revoke_submission_selector =
-    '<a class="button-revoke-story" data-click="revoke"><i class="fa fa-reply"></i> Revoke Submission </a>';
-const popout_confirm_selector =
-    '<button id="ok_button" class="styled_button"><i class="fa fa-check"></i> Ok</button>';
-const popout_cancel_selector =
-    '<button id="cancel_button" class="styled_button styled_button_red"><i class="fa fa-times"></i>  Cancel</button>';
+const submit_selector = 'a[data-click="submit"]';
+const publish_chapter_selector = 'span.chapter_publish';
+const unpublished_chapter_selector = 'i[title="Not Published"]';
+const revoke_submission_selector = 'a.button-revoke-story[data-click="revoke"]';
+const popup_confirm_selector = 'button#ok_button.styled_button';
+const popup_cancel_selector = 'button#cancel_button.styled_button.styled_button_red';
 
 async function mane() {
     const browser = await puppeteer.launch({
