@@ -4,11 +4,12 @@ import { promises as fsPromises } from "fs";
 import fs from "fs";
 
 const submit_selector = 'a[data-click="submit"]';
-const publish_chapter_selector = 'span.chapter_publish';
+const publish_chapter_selector = "span.chapter_publish";
 const unpublished_chapter_selector = 'i[title="Not Published"]';
 const revoke_submission_selector = 'a.button-revoke-story[data-click="revoke"]';
-const popup_confirm_selector = 'button#ok_button.styled_button';
-const popup_cancel_selector = 'button#cancel_button.styled_button.styled_button_red';
+const popup_confirm_selector = "button#ok_button.styled_button";
+const popup_cancel_selector =
+    "button#cancel_button.styled_button.styled_button_red";
 
 async function mane() {
     const browser = await puppeteer.launch({
@@ -18,11 +19,15 @@ async function mane() {
 
     await check_cookies(page);
 
-    await page.goto("https://www.fimfiction.net/");
+    await page.goto("https://www.fimfiction.net/", {
+        waitUntil: "load",
+    });
 
     await check_login(page);
 
-    await page.goto("https://www.fimfiction.net/manage/stories");
+    await page.goto("https://www.fimfiction.net/manage/stories", {
+        waitUntil: "load",
+    });
 
     const stories = await get_story_data(page);
 
@@ -34,12 +39,9 @@ async function login(page: any) {
     const login_button = await page.$x("//button[contains(., 'Log In')]");
     await page.focus('input[name="username"]');
     await page.type('input[name="username"]', input_username());
-    await page.waitForTimeout(1000);
     await page.focus('input[name="password"]');
     await page.type('input[name="password"]', input_password());
-    await page.waitForTimeout(1000);
     await login_button[0].click();
-    await page.waitForTimeout(1000);
     const success = await page.evaluate(() => {
         return !!!document.querySelector(".error-message");
     });
@@ -89,7 +91,7 @@ async function get_story_data(page: Page) {
     });
     for (let story of stories) {
         await page.goto("https://www.fimfiction.net/story/" + story.id, {
-            waitUntil: "networkidle2",
+            waitUntil: "load",
         });
         const published = await page
             .$eval(submit_selector, () => false)
