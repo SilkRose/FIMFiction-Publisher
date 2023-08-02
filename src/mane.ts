@@ -97,10 +97,18 @@ async function get_story_data(page: Page) {
             .$eval(submit_selector, () => false)
             .catch(() => true);
         console.log(published, story.name);
+        let hidden = (await page.$('a[data-click="showAll"]')) !== null;
+        if (hidden) {
+            const show_button = await page.$$('a[data-click="showAll"]');
+            show_button.forEach((button) => button.click());
+        }
         let chapters = await page.$$("a.chapter-title");
         for (let chapter of chapters) {
             console.log(
-                await (await chapter.getProperty("innerText")).jsonValue()
+                await (await chapter.getProperty("innerText")).jsonValue(),
+                (
+                    await (await chapter.getProperty("outerHTML")).jsonValue()
+                ).split("/")[3]
             );
         }
     }
