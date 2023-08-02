@@ -97,6 +97,12 @@ async function get_story_data(page: Page) {
             .$eval(submit_selector, () => false)
             .catch(() => true);
         console.log(published, story.name);
+        let chapters = await page.$$("a.chapter-title");
+        for (let chapter of chapters) {
+            console.log(
+                await (await chapter.getProperty("innerText")).jsonValue()
+            );
+        }
     }
     return stories;
 }
